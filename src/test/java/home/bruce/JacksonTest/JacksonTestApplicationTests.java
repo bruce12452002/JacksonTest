@@ -1,13 +1,16 @@
 package home.bruce.JacksonTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import home.bruce.JacksonTest.entity.Animal;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 
 //@SpringBootTest
@@ -19,7 +22,7 @@ public class JacksonTestApplicationTests {
     static {
         animal.setId(111);
         animal.setName("monkey");
-        animal.setBirthday(new Date(90, 5, 6));
+        animal.setBirthday(new Date(90, Calendar.MAY, 6));
         animal.setDeadDay(LocalDateTime.of(2010, 7, 8, 13, 20));
         animal.setNickname(null);
         animal.setAge(20);
@@ -33,6 +36,14 @@ public class JacksonTestApplicationTests {
          */
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
         objectMapper.registerModule(new JavaTimeModule()); // 支援 java8 的時間
+
+        /**
+         * SerializationFeature 轉 json
+         * DeserializationFeature 轉物件
+         * 預設有不認識的屬性，轉成物件時會報錯，可以改成 false
+         */
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
     }
 
     @Test
@@ -52,21 +63,22 @@ public class JacksonTestApplicationTests {
 
     @Test
     public void testAlias() throws JsonProcessingException {
-        String s1 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"age\":20,\"money\":100.56}";
+//        String s1 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"age\":20,\"money\":100.56}";
         String s2 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"aaa\":20,\"money\":100.56}";
         String s3 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"bbb\":20,\"money\":100.56}";
-        System.out.println(objectMapper.readValue(s1, Animal.class).getAge());
+//        System.out.println(objectMapper.readValue(s1, Animal.class).getAge());
         System.out.println(objectMapper.readValue(s2, Animal.class).getAge());
         System.out.println(objectMapper.readValue(s3, Animal.class).getAge());
     }
 
     @Test
     public void test() throws JsonProcessingException {
-        // 少或多了屬性並不會報錯
-        String s1 = "{\"xxx\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"age\":20,\"money\":100.56}";
-        System.out.println(objectMapper.readValue(s1, Animal.class));
+        // 少了屬性不會報錯
+//        String s1 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"age\":20,\"money\":100.56}";
+//        System.out.println(objectMapper.readValue(s1, Animal.class));
 
-        String s2 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"age\":20,\"money\":100.56},\"xxx\":20";
+        // 多了屬性預設會報錯
+        String s2 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"age\":20,\"money\":100.56,\"xxx\":222}";
         System.out.println(objectMapper.readValue(s2, Animal.class));
     }
 

@@ -3,6 +3,7 @@ package home.bruce.JacksonTest.entity;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Date;
 public class Animal {
     // @JsonIgnore // 轉 json 和轉物件都不會使用
     private int id;
+
     private String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -22,7 +24,8 @@ public class Animal {
     @JsonInclude(JsonInclude.Include.NON_NULL) // 不要null，轉 json 時，如果 value 是 null 就不輸出
     private String nickname;
 
-    @JsonAlias({"aaa", "bbb"}) // 轉物件時，aaa、bbb、age 都能轉成 age 物件
+     @JsonAlias({"aaa", "bbb"}) // 轉物件時，aaa、bbb、age 都能轉成 age 物件
+//    @JsonProperty("aaa") // 只有 aaa 能轉成物件
     private int age;
     private double money;
 
