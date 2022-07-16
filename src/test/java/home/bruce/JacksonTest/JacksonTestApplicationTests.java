@@ -4,18 +4,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import home.bruce.JacksonTest.entity.Animal;
+import home.bruce.JacksonTest.entity.Zoo;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
-//@SpringBootTest
+// @SpringBootTest
 public class JacksonTestApplicationTests {
     private static final Animal animal = new Animal();
+
+    private static final Zoo zoo = new Zoo();
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -28,7 +32,12 @@ public class JacksonTestApplicationTests {
         animal.setAge(20);
         animal.setMoney(100.56);
 
-        /**
+        zoo.setAddress("花巷草弄12號");
+        zoo.setOpenTime(LocalTime.of(9, 0));
+        zoo.setCloseTime(LocalTime.of(17, 0));
+        animal.setZoo(zoo);
+
+        /*
          * SNAKE_CASE 使用_分開
          * KEBAB_CASE 使用-分開
          * LOWER_DOT_CASE 使用.分開
@@ -37,7 +46,7 @@ public class JacksonTestApplicationTests {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
         objectMapper.registerModule(new JavaTimeModule()); // 支援 java8 的時間
 
-        /**
+        /*
          * SerializationFeature 轉 json
          * DeserializationFeature 轉物件
          * 預設有不認識的屬性，轉成物件時會報錯，可以改成 false
@@ -59,6 +68,13 @@ public class JacksonTestApplicationTests {
         System.out.println(a.getNickname());
         System.out.println(a.getAge());
         System.out.println(a.getMoney());
+
+        Zoo zoo = a.getZoo();
+        Optional.ofNullable(zoo).ifPresent(c -> {
+            System.out.println(c.getAddress());
+            System.out.println(c.getOpenTime());
+            System.out.println(c.getCloseTime());
+        });
     }
 
     @Test
@@ -72,7 +88,7 @@ public class JacksonTestApplicationTests {
     }
 
     @Test
-    public void test() throws JsonProcessingException {
+    public void testDifferentKey() throws JsonProcessingException {
         // 少了屬性不會報錯
 //        String s1 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"age\":20,\"money\":100.56}";
 //        System.out.println(objectMapper.readValue(s1, Animal.class));
@@ -80,6 +96,41 @@ public class JacksonTestApplicationTests {
         // 多了屬性預設會報錯
         String s2 = "{\"id\":111,\"name\":\"monkey\",\"birthday\":\"1990-06-05 16:00:00\",\"deadDay\":\"2010-07-08 13:20:00\",\"age\":20,\"money\":100.56,\"xxx\":222}";
         System.out.println(objectMapper.readValue(s2, Animal.class));
+    }
+
+    @Test
+    public void testJsonGetterSetter() throws JsonProcessingException {
+        String z = objectMapper.writeValueAsString(zoo);
+        System.out.println(z);
+
+        Zoo zoo = objectMapper.readValue(z, Zoo.class);
+        System.out.println(zoo.getAddress());
+    }
+
+    @Test
+    public void testJsonPropertyOrder() throws JsonProcessingException {
+        String json = objectMapper.writeValueAsString(zoo);
+        System.out.println(json);
+    }
+
+    @Test
+    public void testJsonValue() throws JsonProcessingException {
+        String json = objectMapper.writeValueAsString(zoo);
+        System.out.println(json);
+    }
+
+    @Test
+    public void testJsonRawValue() throws JsonProcessingException {
+        zoo.setAddress("{\"city\": \"taipei\"}");
+        String json = objectMapper.writeValueAsString(zoo);
+        System.out.println(json);
+
+        /*
+         * @JsonRawValue 將值本來就是 JSON 時，不做處理
+         * 但轉來的值無法再轉成物件了，不用 @JsonRawValue 是可以轉的
+         */
+        Zoo zoo = objectMapper.readValue(json, Zoo.class);
+        System.out.println(zoo.getAddress());
     }
 
 }

@@ -1,6 +1,5 @@
 package home.bruce.JacksonTest.entity;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,12 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-// @JsonIgnoreProperties({"id", "name"}) // @JsonIgnore 比較麻煩，可以一次輸入不想轉成json或轉成物件的屬性
+// @JsonIgnoreProperties({"id", "name"}) // 可以一次忽略很多不想轉成 JSON 的屬性
 public class Animal {
-    // @JsonIgnore // 轉 json 和轉物件都不會使用
+    // @JsonIgnore // 轉 JSON 和轉物件都不會使用
     private int id;
 
     private String name;
+
+    private Zoo zoo;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date birthday;
@@ -21,11 +22,14 @@ public class Animal {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deadDay;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL) // 不要null，轉 json 時，如果 value 是 null 就不輸出
+    /**
+     * 不要null，轉 json 時，如果 value 是 null 就不輸出，也可放在類別上
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String nickname;
 
-     @JsonAlias({"aaa", "bbb"}) // 轉物件時，aaa、bbb、age 都能轉成 age 物件
-//    @JsonProperty("aaa") // 只有 aaa 能轉成物件
+    // @JsonAlias({"aaa", "bbb"}) // 轉物件時，aaa、bbb、age 都能轉成 age 物件
+    @JsonProperty("aaa") // 只有 aaa 能轉成物件
     private int age;
     private double money;
 
@@ -83,5 +87,13 @@ public class Animal {
 
     public void setMoney(double money) {
         this.money = money;
+    }
+
+    public Zoo getZoo() {
+        return zoo;
+    }
+
+    public void setZoo(Zoo zoo) {
+        this.zoo = zoo;
     }
 }
