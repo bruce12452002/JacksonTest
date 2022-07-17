@@ -7,7 +7,7 @@ import java.time.LocalTime;
 @JsonPropertyOrder(alphabetic = true) // JSON 輸出時按字母排序
 @JsonIgnoreType // 如果其他類別有這個類別，會忽略，KV 都不會有，但如果是直接轉成 JSON 不會有影響
 public class Zoo {
-     @JsonRawValue
+//     @JsonRawValue
     // @JsonValue // 轉成 JSON 時，只顯示 value，一個類別只能使用一個，如要顯示多個，可將註解寫在 toString 方法上
     private String address;
     private LocalTime openTime;

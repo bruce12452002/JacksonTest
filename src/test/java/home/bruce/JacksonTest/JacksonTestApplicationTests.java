@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import home.bruce.JacksonTest.entity.Animal;
-import home.bruce.JacksonTest.entity.Zoo;
+import home.bruce.JacksonTest.entity.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -127,10 +126,48 @@ public class JacksonTestApplicationTests {
 
         /*
          * @JsonRawValue 將值本來就是 JSON 時，不做處理
-         * 但轉來的值無法再轉成物件了，不用 @JsonRawValue 是可以轉的
+         * 但轉後的值無法再轉成物件了，不用 @JsonRawValue 是可以轉的
          */
-        Zoo zoo = objectMapper.readValue(json, Zoo.class);
-        System.out.println(zoo.getAddress());
+//        Zoo zoo = objectMapper.readValue(json, Zoo.class);
+//        System.out.println(zoo.getAddress());
     }
 
+    @Test
+    public void testNoSetter() throws JsonProcessingException {
+        People people = new People(1, "mary");
+        String json = objectMapper.writeValueAsString(people);
+        System.out.println(json);
+
+        People p = objectMapper.readValue(json, People.class);
+        System.out.println(p.getId());
+        System.out.println(p.getName());
+    }
+
+    @Test
+    public void testJsonAnyXxx() throws JsonProcessingException {
+        MyMap m = objectMapper
+                .readValue("{\"key\":\"value\", \"k1\":\"v1\"}", MyMap.class);
+        System.out.println(m.getMap("key"));
+        System.out.println(m.getMap("k1"));
+    }
+
+    @Test
+    public void testJsonSerializer() throws JsonProcessingException {
+        People people = new People(1, "mary");
+        people.setGood(true);
+        String json = objectMapper.writeValueAsString(people);
+        System.out.println(json);
+
+        People p = objectMapper.readValue(json, People.class);
+        System.out.println(p.getId());
+        System.out.println(p.getName());
+        System.out.println(p.isGood());
+    }
+
+    @Test
+    public void testJsonAutoDetect() throws JsonProcessingException {
+        NoSetterGetter noSetterGetter = new NoSetterGetter();
+        String json = objectMapper.writeValueAsString(noSetterGetter);
+        System.out.println(json);
+    }
 }
